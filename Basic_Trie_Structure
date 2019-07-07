@@ -1,0 +1,73 @@
+import java.util.HashMap;
+//Trie using hashmap are quite slow hence based on the constraints try to use arrays or any simpler ds...
+public class Trie {
+
+	public static class Trie_Node{
+		HashMap<Character,Trie_Node> map;
+		boolean end_of_word;
+		
+		public Trie_Node() {
+			map=new HashMap<Character,Trie_Node>();
+			end_of_word=false;
+		}
+		
+	}
+	
+	public static void Insertion(Trie_Node root, int pointer ,String str) {
+		if(pointer == str.length()) {
+			root.end_of_word=true;
+			return;
+		}
+		char current = str.charAt(pointer);
+		if(!root.map.containsKey(current)) {
+			Trie_Node temp=new Trie_Node();
+			root.map.put(current, temp);
+		}
+		Insertion(root.map.get(current),pointer+1,str);
+	}
+	
+	//Search for the word if it exists or not
+	public static boolean Search_Word(Trie_Node root,int pointer, String str) {
+		if(pointer == str.length()) {
+			return root.end_of_word;
+		}
+		char current = str.charAt(pointer);
+		if(!root.map.containsKey(current)) {
+			return false;
+		}
+		boolean ans=Search_Word(root.map.get(current),pointer+1, str );
+		return ans;
+	}
+	
+	//Delete the word 
+	public static void Delete_Word(Trie_Node root , int pointer ,String str) {
+		if(pointer ==str.length()) {
+			root.end_of_word=false;
+			return;
+		}
+		char current=str.charAt(pointer);
+		Delete_Word(root.map.get(current),pointer+1,str);
+		Trie_Node temp=root.map.get(current);
+		if(temp.map.size()==0) {
+			root.map.remove(current);
+		}
+	}
+	
+	public static void main(String[] args) {
+		// TODO Auto-generated method stub
+		Trie_Node root=new Trie_Node();
+		Insertion(root, 0, "abcd");
+		Insertion(root, 0 ,"abc");
+		Insertion(root,0,"qeres");
+		Insertion(root , 0,"qeen");
+		Insertion(root, 0 , "erew");
+		System.out.println(Search_Word(root, 0, "abc"));
+		System.out.println(Search_Word(root, 0 ,"qeene"));
+		Delete_Word(root, 0, "abc");
+		Delete_Word(root, 0, "erew");
+		System.out.println(Search_Word(root, 0, "erew"));
+		System.out.println(Search_Word(root, 0, "abcd"));
+		System.out.println(Search_Word(root, 0, "abc"));
+	}
+
+}
