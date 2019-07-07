@@ -1,0 +1,128 @@
+//Link : https://codeforces.com/problemset/problem/514/C
+//Watto and machanism (codeforces)
+
+//using java and hashmap will give tle so use array as they are quite fast
+
+import java.io.BufferedOutputStream;
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
+import java.io.PrintWriter;
+import java.util.StringTokenizer;
+
+public class Round291C {
+
+	public static class trie{
+		trie[] map;
+		boolean eow;
+		public trie() {
+			map=new trie[3];
+			for(int i=0;i<3;i++) {
+				map[i]=null;
+			}
+			eow=false;
+		}
+	}
+	
+	public static void Insertion_Iterative(trie root ,String str) {
+		for(int i=0;i<str.length();i++) {
+			char current =str.charAt(i);
+			if(root.map[(int)(current-'a')]==null) {
+				trie temp=new trie();
+				root.map[(int)current-'a']=temp;
+			}
+			root=root.map[(int)current-'a'];
+		}
+		root.eow=true;
+	}
+	
+	public static boolean Search_Word(trie root, int pointer , String str,int difference) {
+		if(difference >1)return false;
+		if(str.length()==pointer) {
+			if(root.eow==true && difference==1)return true;
+			else return false;
+		}
+		char current = str.charAt(pointer);
+		for(char x='a';x<='c';x++) {
+			if(root.map[(int)x-'a']!=null) {
+				int count=0;
+				if(x!=current) {
+					count+=1;
+				}
+				boolean ans=Search_Word(root.map[(int)x-'a'],pointer+1,str,difference+count);
+				if(ans)return true;
+			}
+		}
+		return false;
+	}
+	
+	public static void main(String[] args) {
+		// TODO Auto-generated method stub
+		out=new PrintWriter (new BufferedOutputStream(System.out));
+		FastReader s=new FastReader();
+		int n=s.nextInt();
+		int m=s.nextInt();
+		trie root=new trie();
+		while(n-->0) {
+			String str=s.next();
+			Insertion_Iterative(root, str);
+		}
+		while(m-->0) {
+			String str=s.next();
+			if(Search_Word(root, 0, str, 0)) {
+				out.println("YES");
+			}else {
+				out.println("NO");
+			}
+		}
+		out.close();
+	}
+
+	public static PrintWriter out;
+	
+	public static class FastReader {
+		BufferedReader br;
+		StringTokenizer st;
+		//it reads the data about the specified point and divide the data about it ,it is quite fast
+		//than using direct 
+
+		public FastReader() {
+			br = new BufferedReader(new InputStreamReader(System.in));
+			//InputStream reads the data and decodes in character stream
+			//It acts as bridge between byte stream and character stream
+		}
+
+		String next() {
+			while (st == null || !st.hasMoreTokens()) {
+				try {
+					st = new StringTokenizer(br.readLine());
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+			}
+			return st.nextToken();
+		}
+
+		int nextInt() {
+			return Integer.parseInt(next());//converts string to integer
+		}
+
+		double nextDouble() {
+			return Double.parseDouble(next());
+		}
+
+		long nextLong() {
+			return Long.parseLong(next());
+		}
+
+		String nextLine() {
+			String str = "";
+			try {
+				str = br.readLine();
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+			return str;
+		}
+	}
+	
+}
