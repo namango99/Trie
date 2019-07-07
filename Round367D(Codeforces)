@@ -1,0 +1,160 @@
+//Problem Link : https://codeforces.com/problemset/problem/706/D
+
+//Vasiliy's Multiset
+//Nice problem based on Tries .. Please take care of the word multiset .. i got two WA because of that
+import java.io.BufferedOutputStream;
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
+import java.io.PrintWriter;
+import java.util.HashMap;
+import java.util.StringTokenizer;
+
+public class Round367D {
+
+	public static class trie {
+		trie zero;
+		trie one;
+		public trie() {
+			zero=null;
+			one=null;
+		}
+	}
+	
+	public static void Insert(trie root, int x) {
+		for(int i=31;i>=0;i--) {
+			int curr_bit=(x&(1<<i))!=0?1:0;
+			if(curr_bit==0) {
+				if(root.zero==null) {
+					root.zero=new trie();
+				}
+				root=root.zero;
+			}else {
+				if(root.one==null) {
+					root.one=new trie();
+				}
+				root=root.one;
+			}
+		}
+	}
+	
+	public static boolean Delete(trie root,int bit, int x) {
+		if(root.one==null && root.zero==null) {
+			return true;
+		}
+		int curr_bit=(x&(1<<(bit)))!=0?1:0;
+		boolean value=Delete(curr_bit==0?root.zero:root.one,bit-1,x);
+		if(value) {
+			if(curr_bit==0) {
+				root.zero=null;
+			}else {
+				root.one=null;
+			}
+		}
+		if(root.zero==null && root.one==null) return true;
+		return false;
+		
+	}
+	
+	public static long ans(trie root, int x) {
+		long ans=0;
+		for(int i=31;i>=0;i--) {
+			int bit=(x&(1<<i))!=0?1:0;
+			if(bit==0) {
+				if(root.one!=null) {
+					root=root.one;
+					ans+=(1<<i);
+				}else {	
+					root=root.zero;
+				}
+			}else {
+				if(root.zero!=null) {
+					root=root.zero;
+					ans+=(1<<i);
+				}else {
+					root=root.one;
+				}
+			}
+		}
+		return ans;
+	}
+	
+	public static void main(String[] args) {
+		// TODO Auto-generated method stub
+		out=new PrintWriter (new BufferedOutputStream(System.out));
+		FastReader s=new FastReader();
+		int q=s.nextInt();
+		trie root=new trie();
+		Insert(root, 0);
+		HashMap<Integer ,Integer> freq=new HashMap<Integer,Integer>();
+		while(q-->0) {
+			char curr=s.next().charAt(0);
+			int x=s.nextInt();
+			
+			if(curr=='+') {
+				Insert(root, x);
+				freq.put(x,freq.containsKey(x)?freq.get(x)+1:1);
+			}else if(curr=='-') {
+				if(freq.get(x)==1) {
+					Delete(root, 31, x);
+					freq.remove(x);
+				}else {
+					freq.put(x,freq.get(x)-1);
+				}
+				
+			}else {
+				long ans=ans(root, x);
+				out.println(ans);
+			}
+		}
+		out.close();
+	}
+	
+	public static PrintWriter out;
+	
+	public static class FastReader {
+		BufferedReader br;
+		StringTokenizer st;
+		//it reads the data about the specified point and divide the data about it ,it is quite fast
+		//than using direct 
+
+		public FastReader() {
+			br = new BufferedReader(new InputStreamReader(System.in));
+			//InputStream reads the data and decodes in character stream
+			//It acts as bridge between byte stream and character stream
+		}
+
+		String next() {
+			while (st == null || !st.hasMoreTokens()) {
+				try {
+					st = new StringTokenizer(br.readLine());
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+			}
+			return st.nextToken();
+		}
+
+		int nextInt() {
+			return Integer.parseInt(next());//converts string to integer
+		}
+
+		double nextDouble() {
+			return Double.parseDouble(next());
+		}
+
+		long nextLong() {
+			return Long.parseLong(next());
+		}
+
+		String nextLine() {
+			String str = "";
+			try {
+				str = br.readLine();
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+			return str;
+		}
+	}
+	
+}
